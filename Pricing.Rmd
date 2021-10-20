@@ -1,0 +1,146 @@
+---
+title: "pricing"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##LOADING DATA
+
+```{r}
+# Read in the Data
+data = read.csv("/Users/jadechen/Documents/Customer/Ex2_Data_R.csv")
+
+str(data)
+summary(data)
+```
+##PREPARE DATA
+#logs for app1
+```{r}
+# Create log UNITS1
+data$logUNITS1 <- log(data$UNITS1)
+# Create log PRICES1
+data$logPRICE1 <- log(data$REGPR1)
+```
+
+
+#logs for app2
+```{r}
+# Create log UNITS2
+data$logUNITS2 <- log(data$UNITS2)
+# Create log PRICES2
+data$logPRICE2 <- log(data$REGPR2)
+```
+
+#logs for app3
+```{r}
+# Create log UNITS2
+data$logUNITS3 <- log(data$UNITS3)
+# Create log PRICES2
+data$logPRICE3 <- log(data$REGPR3)
+```
+
+
+##REGRESSION MODELS
+#APP1 OWN EFFECTS REGRESSION
+```{r}
+#linear regression
+ml.price<- lm(UNITS1 ~ REGPR1+FEAT1+RATING1, data = data)
+summary(ml.price)
+#Multiple R-squared:  0.8863,	Adjusted R-squared:  0.8832
+#multiple linear regression is the best
+
+#Semilog regression
+ml.semilog.price<- lm(logUNITS1 ~ REGPR1+FEAT1+RATING1, data = data)
+summary(ml.semilog.price)
+#Multiple R-squared:  0.8395,	Adjusted R-squared:  0.835 
+```
+
+#APP2 OWN EFFECTS REGRESSION
+```{r}
+#linear regression
+ml.price2<- lm(UNITS2 ~ REGPR2+FEAT2+RATING2, data = data)
+summary(ml.price2)
+#multiple linear regression is the best
+
+#Semilog regression
+ml.semilog.price2<- lm(logUNITS2 ~ REGPR2+FEAT2+RATING2, data = data)
+summary(ml.semilog.price2)
+```
+
+#APP3 OWN EFFECTS REGRESSION
+```{r}
+#linear regression
+ml.price3<- lm(UNITS3 ~ REGPR3+FEAT3+RATING3, data = data)
+summary(ml.price3)
+#multiple linear regression is the best
+
+#Semi-log regression
+ml.semilog.price3<- lm(logUNITS3 ~ REGPR3+FEAT3+RATING3, data = data)
+summary(ml.semilog.price3)
+```
+
+
+##COMPETITOR EFFECTS REGRESSION
+#app1 competitor muitple regression
+```{r}
+#Linear regression-Take in all competitor variables
+ml.competitive.1<- lm(UNITS1 ~ REGPR1+FEAT1+RATING1+UNITS2+REGPR2+FEAT2+RATING2+UNITS3+REGPR3+FEAT3+RATING3, data = data)
+summary(ml.competitive.1)
+#Multiple R-squared:  0.893,	Adjusted R-squared:  0.8813
+
+#Linear regression-Take only units of app2 and app3
+#higher adjusted r square
+ml.competitive.t<- lm(UNITS1 ~ REGPR1+FEAT1+RATING1+UNITS2+UNITS3, data = data)
+summary(ml.competitive.t)
+#Multiple R-squared:  0.8905,	Adjusted R-squared:  0.8854
+
+
+#Semi-log regression
+ml.semilog.competitive.1<- lm(logUNITS1 ~ REGPR1+FEAT1+RATING1+UNITS2+REGPR2+FEAT2+RATING2+UNITS3+REGPR3+FEAT3+RATING3, data = data)
+summary(ml.semilog.competitive.1)
+#Multiple R-squared:  0.8519,	Adjusted R-squared:  0.8357 
+```
+
+#app2 competitor muitple regression
+```{r}
+#Linear regression-Take in all competitor variables
+#Best model
+ml.competitive.2<- lm(UNITS2 ~UNITS1+REGPR1+FEAT1+RATING1+REGPR2+FEAT2+RATING2+UNITS3+REGPR3+FEAT3+RATING3, data = data)
+summary(ml.competitive.2)
+#Multiple R-squared:  0.7782,	Adjusted R-squared:  0.7565 
+
+#Linear regression-Take only units of app2 and app3
+ml.competitive.2t<- lm(UNITS2 ~REGPR2+FEAT2+RATING2+UNITS1+UNITS3, data = data)
+summary(ml.competitive.2t)
+#Multiple R-squared:  0.7382,	Adjusted R-squared:  0.726
+
+#Semi-log regression
+ml.semilog.competitive.2<- lm(logUNITS2 ~ UNITS1+REGPR1+FEAT1+RATING1+REGPR2+FEAT2+RATING2+UNITS3+REGPR3+FEAT3+RATING3, data = data)
+summary(ml.semilog.competitive.2)
+#Multiple R-squared:  0.5982,	Adjusted R-squared:  0.5588 
+```
+
+
+#app3 competitor muitple regression
+```{r}
+#Linear regression-Take in all competitor variables
+ml.competitive.3<- lm(UNITS3 ~ UNITS1+REGPR1+FEAT1+RATING1+UNITS2+REGPR2+FEAT2+RATING2+REGPR3+FEAT3+RATING3, data = data)
+summary(ml.competitive.3)
+#Multiple R-squared:  0.4944,	Adjusted R-squared:  0.4393 
+
+
+#semi-log regression-Take in all competitor variables
+#Best model
+ml.semilog.competitive.3<- lm(logUNITS3 ~ UNITS1+REGPR1+FEAT1+RATING1+UNITS2+REGPR2+FEAT2+RATING2+REGPR3+FEAT3+RATING3, data = data)
+summary(ml.semilog.competitive.3)
+#Multiple R-squared:  0.5706,	Adjusted R-squared:  0.5238
+
+#semi-log regression-Take only units of app1 and app2
+ml.semilog.competitive.3e<- lm(logUNITS3 ~ UNITS1+UNITS2+REGPR3+FEAT3+RATING3, data = data)
+summary(ml.semilog.competitive.3e)
+#Multiple R-squared:  0.502,	Adjusted R-squared:  0.4787
+```
+
